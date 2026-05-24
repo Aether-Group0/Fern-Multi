@@ -25,7 +25,7 @@ A powerful, multi-purpose network reconnaissance and security testing toolkit de
 
 ## ✨ Features
 
-**Fern-Multi V3** is a comprehensive toolkit featuring:
+**Fern-Multi** is a comprehensive toolkit featuring:
 
 - 🔍 **Network Scanning & Reconnaissance**
 - Silent Nmap stealth port scanning
