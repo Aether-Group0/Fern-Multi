@@ -1,4 +1,4 @@
-# 🌿 Fern-Multi V3
+# 🌿 Fern-Multi 
 
 A powerful, multi-purpose network reconnaissance and security testing toolkit designed for simple penetration testing and network analysis.
 
