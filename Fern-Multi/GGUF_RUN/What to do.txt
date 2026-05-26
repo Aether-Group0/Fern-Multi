@@ -1,0 +1,2 @@
+Put your GGUF Files in the LLMS PReTrained folder and then run them.
+    Simple right.

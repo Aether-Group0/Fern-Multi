@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> Fern Multi tool</title>
+    <link rel="icon" type="Image/png" sizes="32x32" href="Images/favicon.png">
+    <style>
+        :root {
+            --sky-blue: #32C5FF;
+            --ocean-blue: #0A84FF;
+            --nature-green: #27AE60;
+            --mint-green: #29F1A3;
+            --glass-white: rgba(255, 255, 255, 0.25);
+            --border-glow: rgba(255, 255, 255, 0.5);
+            --nav-blue: #042E5E;
+            --text-dark: #05162E;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Roboto', sans-serif;
+            min-height: 200vh; 
+            color: #FFFFFF;
+            position: relative;
+            
+           
+            background: linear-gradient(135deg, 
+                var(--mint-green), 
+                var(--sky-blue), 
+                var(--ocean-blue), 
+                var(--nature-green)
+            );
+            background-size: 400% 400%;
+            animation: auroraShift 20s ease infinite;
+            background-attachment: fixed;
+        }
+
+     
+        @keyframes auroraShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .bubble-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 2;
+            overflow: hidden;
+        }
+
+        .bubble {
+            position: absolute;
+            bottom: -100px;
+            background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.1) 40%, rgba(10,132,255,0.2) 70%, rgba(255,255,255,0) 100%);
+            border: 1px solid rgba(255,255,255,0.4);
+            border-radius: 50%;
+            box-shadow: inset -5px -5px 10px rgba(0,0,0,0.05), 0 5px 15px rgba(0,0,0,0.05);
+            animation: floatUp 12s linear infinite;
+        }
+
+        @keyframes floatUp {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 0;
+            }
+            10% { opacity: 0.7; }
+            90% { opacity: 0.7; }
+            100% {
+                transform: translateY(-120vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+      
+        .bubble:nth-child(1) { width: 60px; height: 60px; left: 10%; animation-duration: 10s; }
+        .bubble:nth-child(2) { width: 100px; height: 100px; left: 30%; animation-duration: 15s; animation-delay: 2s; }
+        .bubble:nth-child(3) { width: 40px; height: 40px; left: 55%; animation-duration: 8s; animation-delay: 4s; }
+        .bubble:nth-child(4) { width: 80px; height: 80px; left: 75%; animation-duration: 18s; animation-delay: 1s; }
+        .bubble:nth-child(5) { width: 50px; height: 50px; left: 90%; animation-duration: 12s; animation-delay: 5s; }
+
+
+        .taskbar {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-bottom: 1px solid var(--border-glow);
+            padding: 12px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 100;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        .os-logo {
+            font-size: 1.2rem;
+            font-weight: 800;
+            letter-spacing: 2px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: textPulse 3s ease-in-out infinite;
+        }
+
+        @keyframes textPulse {
+            0%, 100% { text-shadow: 0 0 4px rgba(255,255,255,0.4); }
+            50% { text-shadow: 0 0 12px rgba(255,255,255,0.9); }
+        }
+
+        .workspace {
+            padding: 120px 40px 60px 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 60px;
+            position: relative;
+            z-index: 10;
+        }
+
+      
+        .project-panel {
+            width: 100%;
+            max-width: 1000px;
+            background: linear-gradient(135deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.1) 100%);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 16px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1), inset 0 0 15px rgba(255, 255, 255, 0.2);
+            overflow: hidden;
+            animation: panelFadeIn 1s ease-out;
+        }
+
+        @keyframes panelFadeIn {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .panel-header {
+            padding: 12px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(to bottom, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 100%);
+        }
+
+        .panel-title {
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            color: var(--nav-blue);
+            letter-spacing: 1px;
+        }
+
+        .window-controls {
+            display: flex;
+            gap: 8px;
+        }
+
+        .control-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.4);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .panel-body {
+            padding: 40px;
+            color: var(--text-dark);
+        }
+
+        .panel-body h1 {
+            color: var(--nav-blue);
+            margin-bottom: 20px;
+            font-size: 2.2rem;
+        }
+
+        .panel-body p {
+            margin-bottom: 15px;
+            line-height: 1.7;
+            font-size: 1.05rem;
+        }
+
+        .module-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .sub-card {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            padding: 20px;
+            transition: transform 0.3s ease, background 0.3s ease;
+        }
+
+        .sub-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.35);
+        }
+
+        .sub-card h3 {
+            color: var(--nav-blue);
+            margin-bottom: 10px;
+        }
+
+    
+        .os-footer {
+            text-align: center;
+            padding: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            color: var(--nav-blue);
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bubble-container">
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+    </div>
+
+    <header class="taskbar">
+        <div class="os-logo">Fern-Multi-Tool</div>
+        <div class="panel-title">About Fern-Multi</div>
+    </header>
+
+    <main class="workspace">
+
+        <section class="project-panel">
+            <div class="panel-header">
+                <div class="panel-title">About Fern-Multi-Tool</div>
+                <div class="window-controls">
+                    <div class="control-dot"></div>
+                    <div class="control-dot"></div>
+                    <div class="control-dot"></div>
+                </div>
+            </div>
+            <div class="panel-body">
+                <h1>Fern-Multi-Tool</h1>
+                <p>Fern-Multi-Tool was origanly made by Pocket-Change-Creator who got bored and had time on their hands and so started working on it.</p>
+                <p>It was made for many things such as Networking,Hacking,General use and that list is growing all the time as the developers keep working on it.</p>
+            </div>
+        </section>
+
+        <section class="project-panel">
+            <div class="panel-header">
+                <div class="panel-title">Tools in Fern-Multi</div>
+                <div class="window-controls">
+                    <div class="control-dot"></div>
+                    <div class="control-dot"></div>
+                    <div class="control-dot"></div>
+                </div>
+            </div>
+            <div class="panel-body">
+                <h2>Tools</h2>
+                <p>There are a couple differnt types of tools for differnt things.</p>
+                
+                <div class="module-grid">
+                    <div class="sub-card">
+                        <h3>Networking</h3>
+                        <p>Networking Tools include:</br>
+                           <b>HTTP_SERV</b></br>
+                           <b>Connect proxy</b></p>
+                    </div>
+                    <div class="sub-card">
+                        <h3>Hacking</h3>
+                        <p>Hacking Tools include:</br>
+                           <b>Paytime</b></br>
+                           <b>Case77</b></br>
+                           <b>Ip_Tools</b></br>
+                           <b>NSLOOKUP</b>
+                        </p>
+                    </div>
+                    <div class="sub-card">
+                        <h3>General use</h3>
+                        <p>General use Tools include:</br>
+                        <b>TV-DLP</b></br>
+                        <b>GGUF_RUN</b></p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="project-panel">
+            <div class="panel-header">
+                <div class="panel-title">About the Developers.</div>
+                <div class="window-controls">
+                    <div class="control-dot"></div>
+                    <div class="control-dot"></div>
+                    <div class="control-dot"></div>
+                </div>
+            </div>
+            <div class="panel-body">
+                <h2>Fern-Multi was made by AetherGroup</h2>
+                <p> Developed by The <a href=https://github.com/Aether-Group0>AetherGroup</a></br>
+                Aether Group conssists of:</br><a href=https://github.com/pocket-change-creator>Pocket-Change-Creator</a></p>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="os-footer">
+        <p>Developed by AetherGroup</p>
+    </footer>
+
+</body>
+</html>
