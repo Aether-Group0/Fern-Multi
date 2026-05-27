@@ -24,6 +24,3 @@ python3 Fern-Multi/Fern-Multi-tool.py
 - bash
 - nmap (for scanning features)
 
-## Notes
-
-All internal script references are now relative to the repository path, so the project can run on any machine without hard-coded user directories.
