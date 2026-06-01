@@ -23,4 +23,5 @@ python3 Fern-Multi/Fern-Multi-tool.py
 - Python 3
 - bash
 - nmap (for scanning features)
-
+- msfvenom
+- The msf framework
