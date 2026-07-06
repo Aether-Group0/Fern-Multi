@@ -13,7 +13,8 @@ def run_python(script_path, capture_output=False):
     if not os.path.exists(script):
         print(f"[!] Error: Script not found at {script}")
         return subprocess.run(["echo", ""], capture_output=capture_output, text=True)
-    return subprocess.run(["python3", script], capture_output=capture_output, text=True)
+    # Use the same python interpreter that's running this script
+    return subprocess.run([sys.executable, script], capture_output=capture_output, text=True)
 
 
 def run_shell(script_path, capture_output=False):
@@ -25,7 +26,8 @@ def run_shell(script_path, capture_output=False):
 
 
 def clear_screen():
-    os.system("clear")
+    # Portable clear for Windows (cls) and Unix (clear)
+    os.system("cls" if os.name == "nt" else "clear")
 
 
 def typewriter(text, speed=0.02):
@@ -39,7 +41,6 @@ def typewriter(text, speed=0.02):
 def HTTP_SERV():
     run_python("HTTP_SERV/HTTP_SERV.py")
     input("\nPress Enter to return to menu...")
-    Main_Menu()
 
 
 def Port_FIND():
@@ -69,13 +70,11 @@ def TV_DLP():
 def NSlookup():
     run_python("Tools-Other/NSLOOKUP/NSlookupF.py")
     input("\nPress Enter to return to menu...")
-    Main_Menu()
 
 
 def Case77():
     run_python("Scripts/Case7793278432987.py")
     input("\nPress Enter to return to menu...")
-    Main_Menu()
 
 
 def RIp_ip():
@@ -89,7 +88,6 @@ def RIp_ip():
 def GEOlocate():
     run_python("Scripts/GEO46587346398576326888888.py")
     input("\nPress Enter to return to menu...")
-    Main_Menu()
 
 
 def silent_Nmap_port_scan_ip():
@@ -104,7 +102,7 @@ def silent_Nmap_port_scan_ip():
 
     menu = input("press M to go to main menu: ").strip().lower()
     if menu == "m":
-        Main_Menu()
+        return
     else:
         print("[!] Not valid command")
 
@@ -122,7 +120,7 @@ def os_Nmap_scan():
 
     menu = input("press M to go to main menu: ").strip().lower()
     if menu == "m":
-        Main_Menu()
+        return
     else:
         print("[!] Not valid command")
 
@@ -136,7 +134,7 @@ def msfvenom_payload_generater():
 
     menu = input("press M to go to main menu: ").strip().lower()
     if menu == "m":
-        Main_Menu()
+        return
     else:
         print("[!] Not valid command")
 
@@ -159,38 +157,42 @@ def Help():
     print("Fern TV-DLP: Media Manipulation Tool")
     print("Fern NSlookup: DNS Lookup Tool")
     print("Fern-h: Help Menu")
+    print("Fern Exit: Exit the tool")
     input("\nPress Enter to return to menu...")
-    Main_Menu()
 
 
 def Main_Menu():
-    splash_screen()
-    choice = input("Type Fern before: ").strip()
+    while True:
+        splash_screen()
+        choice = input("Type command (e.g. 'Fern SNp'):\n> ").strip().lower()
 
-    if choice == "Fern SNp":
-        silent_Nmap_port_scan_ip()
-    elif choice == "Fern OSN":
-        os_Nmap_scan()
-    elif choice == "Fern PayTime":
-        msfvenom_payload_generater()
-    elif choice == "Fern Rip-PH":
-        RIp_ip()
-    elif choice == "Fern GEO":
-        GEOlocate()
-    elif choice == "Fern CASE":
-        Case77()
-    elif choice == "Fern HTTP":
-        HTTP_SERV()
-    elif choice == "Fern TOR-S":
-        SCAN_Through_TOR()
-    elif choice == "Fern TV-DLP":
-        TV_DLP()
-    elif choice == "Fern NSlookup":
-        NSlookup()
-    elif choice == "Fern-h":
-        Help()
-    else:
-        print("[!] Invalid Command")
+        if choice == "fern snp":
+            silent_Nmap_port_scan_ip()
+        elif choice == "fern osn":
+            os_Nmap_scan()
+        elif choice == "fern paytime":
+            msfvenom_payload_generater()
+        elif choice == "fern rip-ph":
+            RIp_ip()
+        elif choice == "fern geo":
+            GEOlocate()
+        elif choice == "fern case":
+            Case77()
+        elif choice == "fern http":
+            HTTP_SERV()
+        elif choice == "fern tor-s":
+            SCAN_Through_TOR()
+        elif choice == "fern tv-dlp":
+            TV_DLP()
+        elif choice == "fern nslookup":
+            NSlookup()
+        elif choice == "fern-h":
+            Help()
+        elif choice == "fern exit":
+            print("[+] Exiting Fern Multi. Goodbye!")
+            break
+        else:
+            print("[!] Invalid Command")
 
 
 if __name__ == "__main__":
