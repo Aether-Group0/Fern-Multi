@@ -1,4 +1,4 @@
-
+#!/bin/bash
 
 TOR_PROXY="socks4://127.0.0.1:9050"
 
@@ -22,5 +22,4 @@ RUN_TOR_SCAN() {
     nmap -Pn -sT --proxies "$TOR_PROXY" -F "$TARGET"
 }
 
-n
 RUN_TOR_SCAN

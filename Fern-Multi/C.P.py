@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
 import os
 import subprocess
+import sys
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 FERN_DIR = os.path.abspath(os.path.join(BASE_DIR, ".."))
 
 
 def tor_script(script_name):
-    script_path = os.path.join(FERN_DIR, "connect proxy", script_name)
+    script_path = os.path.join(FERN_DIR, "connect_proxy", script_name)
     return subprocess.run(["bash", script_path], capture_output=True, text=True)
 
 
@@ -19,18 +20,24 @@ def Change_TOR_ID():
     result = tor_script("Change_ID_Proxy.sh")
     clear_screen()
     print(result.stdout)
+    if result.returncode != 0:
+        print(f"[!] Error: {result.stderr}")
 
 
 def Connect_To_TOR():
     result = tor_script("Proxy.sh")
     clear_screen()
     print(result.stdout)
+    if result.returncode != 0:
+        print(f"[!] Error: {result.stderr}")
 
 
 def Disconnect_From_TOR():
     result = tor_script("end_proxy.sh")
     clear_screen()
     print(result.stdout)
+    if result.returncode != 0:
+        print(f"[!] Error: {result.stderr}")
 
 
 def main_menu():
@@ -47,8 +54,8 @@ def main_menu():
         else:
             print("[!] Command not recognized. Please try again.")
 
-    print("Returning to Fern Multi menu.")
-    subprocess.run(["python3", os.path.join(FERN_DIR, "Fern-Multi-tool.py")])
+    print("[*] Returning to Fern Multi menu.")
+    subprocess.call(["python3", os.path.join(FERN_DIR, "Fern-Multi/Fern-Multi-tool.py")])
 
 
 if __name__ == "__main__":

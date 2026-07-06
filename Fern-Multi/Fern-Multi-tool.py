@@ -10,11 +10,17 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 def run_python(script_path, capture_output=False):
     script = os.path.join(BASE_DIR, script_path)
+    if not os.path.exists(script):
+        print(f"[!] Error: Script not found at {script}")
+        return subprocess.run(["echo", ""], capture_output=capture_output, text=True)
     return subprocess.run(["python3", script], capture_output=capture_output, text=True)
 
 
 def run_shell(script_path, capture_output=False):
     script = os.path.join(BASE_DIR, script_path)
+    if not os.path.exists(script):
+        print(f"[!] Error: Script not found at {script}")
+        return subprocess.run(["echo", ""], capture_output=capture_output, text=True)
     return subprocess.run(["bash", script], capture_output=capture_output, text=True)
 
 
@@ -40,18 +46,24 @@ def Port_FIND():
     result = run_shell("Tools-Other/Ip_Tools/port_FIND_using_Nmap.sh", capture_output=True)
     clear_screen()
     print(result.stdout)
+    if result.returncode != 0:
+        print(f"[!] Error: {result.stderr}")
 
 
 def SCAN_Through_TOR():
     result = run_shell("Tools-Other/Ip_Tools/TOR_SCANNER.sh", capture_output=True)
     clear_screen()
     print(result.stdout)
+    if result.returncode != 0:
+        print(f"[!] Error: {result.stderr}")
 
 
 def TV_DLP():
     result = run_shell("Tools-Other/MEDIA-MUNIPULATERS/TV-DLP.sh", capture_output=True)
     clear_screen()
     print(result.stdout)
+    if result.returncode != 0:
+        print(f"[!] Error: {result.stderr}")
 
 
 def NSlookup():
@@ -70,6 +82,8 @@ def RIp_ip():
     result = run_shell("Scripts/sha4665762I087pP97u798l87l.sh", capture_output=True)
     clear_screen()
     print(result.stdout)
+    if result.returncode != 0:
+        print(f"[!] Error: {result.stderr}")
 
 
 def GEOlocate():
@@ -82,41 +96,49 @@ def silent_Nmap_port_scan_ip():
     typewriter("Port Scan in progress...", speed=0.05)
     typewriter("...", speed=0.05)
     typewriter("...", speed=0.05)
-    ip_var = input("enter ip you want to scan.")
+    ip_var = input("enter ip you want to scan: ").strip()
+    if not ip_var:
+        print("[!] No IP provided.")
+        return
     subprocess.run(["nmap", ip_var, "-sS"])
 
-    menu = input("press M to go to main menu")
-    if menu.lower() == "m":
+    menu = input("press M to go to main menu: ").strip().lower()
+    if menu == "m":
         Main_Menu()
     else:
-        print("not valid command")
+        print("[!] Not valid command")
 
 
 def os_Nmap_scan():
     typewriter("OS Scan in progress...", speed=0.05)
     typewriter("...", speed=0.05)
     typewriter("...", speed=0.05)
-    ip_var = input("enter ip you want to scan.")
+    ip_var = input("enter ip you want to scan: ").strip()
+    if not ip_var:
+        print("[!] No IP provided.")
+        return
     result = subprocess.run(["nmap", ip_var, "-O"], capture_output=True, text=True)
     typewriter(result.stdout, speed=0.005)
 
-    menu = input("press M to go to main menu")
-    if menu.lower() == "m":
+    menu = input("press M to go to main menu: ").strip().lower()
+    if menu == "m":
         Main_Menu()
     else:
-        print("not valid command")
+        print("[!] Not valid command")
 
 
 def msfvenom_payload_generater():
     result = run_shell("Scripts/PayTime.sh", capture_output=True)
     clear_screen()
     print(result.stdout)
+    if result.returncode != 0:
+        print(f"[!] Error: {result.stderr}")
 
-    menu = input("press M to go to main menu")
-    if menu.lower() == "m":
+    menu = input("press M to go to main menu: ").strip().lower()
+    if menu == "m":
         Main_Menu()
     else:
-        print("not valid command")
+        print("[!] Not valid command")
 
 
 def splash_screen():
@@ -143,7 +165,7 @@ def Help():
 
 def Main_Menu():
     splash_screen()
-    choice = input("Type Fern before: ")
+    choice = input("Type Fern before: ").strip()
 
     if choice == "Fern SNp":
         silent_Nmap_port_scan_ip()
@@ -168,7 +190,7 @@ def Main_Menu():
     elif choice == "Fern-h":
         Help()
     else:
-        print("Invalid Command")
+        print("[!] Invalid Command")
 
 
 if __name__ == "__main__":
