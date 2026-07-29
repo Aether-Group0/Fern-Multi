@@ -1,6 +1,6 @@
 # Fern-Multi
 
-!Warning! Fern-Multi is meant mainly for Linux systems. We are working on a Windows version.
+!Warning! Fern-Multi is meant mainly for Linux systems. 
 Fern-Multi is a powerful tool that combines several scripts for network scanning, DNS lookups, and local HTTP serving.
 
 ## Installation
